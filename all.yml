@@ -1,0 +1,84 @@
+---
+- name: Kafka Provisioning
+  hosts: all
+  remote_user: root
+  gather_facts: false
+  tags: kafka_connect
+  tasks:
+    - name: apt-get update and upgrade
+      apt:
+        update_cache: yes
+        upgrade: full
+        force_apt_get: yes
+    - name: install java and docker
+      apt:
+        name: openjdk-11-jdk, jq, docker, docker-compose, python3, python3-pip, mysql-client, postgresql-client-12
+        state: latest
+        force_apt_get: yes
+    - name: Installing Python Modules
+      tags: pip
+      pip:
+        name:
+          - mysql-connector-python
+          - PyMySQL
+    - name: Copying docker-compose.yml
+      copy:
+        src: docker-compose.yml
+        dest: /home/ubuntu/docker-compose.yml
+    - name: Copying edit-docker-compose.sh
+      copy:
+        src: edit-docker-compose.sh
+        dest: /home/ubuntu/edit-docker-compose.sh
+    - name: Copying luserdb.conf file
+      copy:
+        src: luserdb.conf
+        dest: luserdb.conf
+    - name: Git clone repository
+      git:
+        repo: 'https://github.com/berthayes/db_maker.git'
+        dest: /home/ubuntu/db_maker
+    - name: Editing docker-compose.yml file
+      tags: edit_docker_compose
+      script:
+        cmd: edit-docker-compose.sh
+    - name: Adding user ubuntu to Docker group
+      ansible.builtin.user:
+        name: ubuntu
+        append: true
+        groups: docker
+    - name: Starting Docker
+      shell:
+        cmd: docker-compose -f /home/ubuntu/workshop-docker-compose.yml up -d
+    - name: Waiting a few minutes for software to finish spinning up
+      pause:
+        minutes: 3
+    - name: Creating MySQL Database
+      tags: create_db
+      script: create_db.py
+      args:
+        executable: python3
+    - name: Creating MySQL Table
+      tags: create_table
+      script: create_table.py
+      args:
+        executable: python3
+    - name: Inserting records into table
+      tags: insert_records
+      script: db_insert.py -f /home/ubuntu/db_maker/fake_names.csv
+      args:
+        executable: python3
+    - name: Copying add_users.sh
+      tags: copy_add_users
+      copy:
+        src: add_users.sh
+        dest: /home/ubuntu/add_users.sh
+    - name: Copying user_mod.sql
+      tags: copy_user_mod
+      copy:
+        src: user_mod.sql
+        dest: /home/ubuntu/user_mod.sql
+    - name: modifying user permissions in mysql
+      tags: mysql_permissions
+      shell: mysql --user=root --password=Admin123 --host=localhost --port=3306 --protocol=tcp < /home/ubuntu/user_mod.sql
+
+
