@@ -1,0 +1,17 @@
+{
+  "database.allowPublicKeyRetrieval": "true",
+  "name": "MySqlConnect",
+  "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+  "tasks.max": "1",
+  "errors.log.enable": true,
+  "errors.log.include.messages": true,
+  "database.hostname": "mysql",
+  "database.port": "3306",
+  "database.user": "connect_user",
+  "database.password": "asgard",
+  "database.server.name": "datapipe",
+  "database.history.kafka.bootstrap.servers": "broker:29092",
+  "database.history.kafka.topic": "dbhistory",
+  "include.schema.changes": true,
+  "include.query": true
+}

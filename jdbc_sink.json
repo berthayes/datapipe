@@ -1,0 +1,15 @@
+{
+  "name": "JdbcSink",
+  "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+  "tasks.max": "1",
+  "errors.log.enable": "true",
+  "errors.log.include.messages": "true",
+  "topics": [
+    "user_address"
+  ],
+  "connection.url": "jdbc:postgresql://postgres:5432/user_addy",
+  "connection.user": "postgres",
+  "connection.password": "postgres",
+  "dialect.name": "PostgreSqlDatabaseDialect",
+  "auto.create": "true"
+}
