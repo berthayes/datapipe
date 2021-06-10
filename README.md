@@ -22,6 +22,10 @@ Add Lock Table priveleges to the connect-user
 ```sql
 mysql --host=localhost --protocol=tcp --port=3306 --user=root -p
 ```
+Or, if you don't have mysql installed on your local system:
+```mysql
+docker exec -it mysql bash -c 'mysql -u root -p$MYSQL_ROOT_PASSWORD'
+```
 ```
 GRANT SELECT, RELOAD, SHOW DATABASES, REPLICATION SLAVE, REPLICATION CLIENT, LOCK TABLES ON *.* TO 'connect_user';
 FLUSH PRIVILEGES;
