@@ -128,9 +128,6 @@ services:
       - connect
     ports:
       - "8088:8088"
-    volumes:
-      - ./ksql-extension:/etc/ksql-extension/
-      - ./mmdb:/opt/mmdb/
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_KSQL_EXTENSION_DIR: "/etc/ksql-extension"
